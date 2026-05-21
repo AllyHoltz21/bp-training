@@ -1,0 +1,418 @@
+:root {
+  --bg: #f3f5f9;
+  --surface: #ffffff;
+  --ink: #1a2233;
+  --muted: #5b6478;
+  --line: #e3e7ef;
+  --accent: #2c6ef2;
+  --accent-deep: #1a4fbf;
+  --danger: #d23b3b;
+  --good: #1f9d55;
+  --gauge-face: #f8f6ef;
+  --gauge-ring: #2a2f3a;
+  --needle: #b8232b;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+}
+
+h1, h2, h3 { margin: 0 0 0.5rem; font-weight: 600; }
+p { line-height: 1.5; }
+
+/* ---------- Instructor page ---------- */
+.instructor-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 10px 40px rgba(20, 30, 60, 0.08);
+}
+
+.card h1 {
+  font-size: 1.75rem;
+}
+
+.subtitle {
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  margin: 0 0 1rem;
+}
+
+.hint {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* Inputs */
+.bp-inputs {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.bp-inputs label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.bp-inputs input,
+.full-row input {
+  font-size: 1.5rem;
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  width: 100%;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s ease;
+  background: white;
+  color: var(--ink);
+}
+
+.bp-inputs input:focus,
+.full-row input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.slash {
+  font-size: 2rem;
+  color: var(--muted);
+  padding-bottom: 0.3rem;
+}
+
+.full-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+}
+
+.full-row input {
+  font-size: 1.15rem;
+  max-width: 200px;
+}
+
+.error-msg {
+  color: var(--danger);
+  font-size: 0.9rem;
+  min-height: 1.2em;
+  margin: 0.25rem 0 0.75rem;
+}
+
+/* Buttons */
+.primary-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.85rem 1.25rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+.primary-btn:hover { background: var(--accent-deep); }
+.primary-btn:active { transform: translateY(1px); }
+
+.ghost-btn {
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--line);
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+.ghost-btn:hover { color: var(--ink); border-color: var(--muted); }
+
+/* ---------- Student page ---------- */
+.student-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.top-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+.top-bar h1 {
+  font-size: 1.5rem;
+}
+
+.back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.back-link:hover { text-decoration: underline; }
+
+.instructions {
+  background: #eef3ff;
+  border: 1px solid #d6e0ff;
+  color: #1b2a4e;
+  padding: 0.9rem 1.1rem;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  margin-bottom: 1.5rem;
+}
+.instructions p { margin: 0; }
+.instructions em { color: #1a4fbf; font-style: normal; font-weight: 600; }
+
+.exercise-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 820px) {
+  .exercise-grid { grid-template-columns: 1fr; }
+}
+
+.gauge-panel,
+.controls-panel {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 24px rgba(20, 30, 60, 0.06);
+}
+
+/* Gauge */
+.gauge-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gauge {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  display: block;
+}
+
+.gauge-bg { fill: var(--gauge-face); }
+.gauge-ring {
+  fill: none;
+  stroke: var(--gauge-ring);
+  stroke-width: 6;
+}
+
+.tick {
+  stroke: #1f2530;
+  stroke-width: 1.5;
+}
+.tick.major { stroke-width: 2.5; }
+.tick-label {
+  fill: #1f2530;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.gauge-label {
+  fill: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.gauge-brand {
+  fill: #a3a8b0;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+}
+
+.needle {
+  stroke: var(--needle);
+  stroke-width: 4;
+  stroke-linecap: round;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+}
+
+.needle-cap {
+  fill: #2a2f3a;
+}
+
+.pressure-readout {
+  margin-top: 0.5rem;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 1.6rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.readout-unit {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-left: 0.3rem;
+}
+
+/* Cuff visual */
+.cuff-area { margin-top: 1.25rem; }
+
+.arm {
+  height: 70px;
+  background: linear-gradient(180deg, #f3d2bd 0%, #e0a87f 100%);
+  border-radius: 35px;
+  position: relative;
+  margin: 0 1rem;
+  box-shadow: inset 0 -6px 12px rgba(0,0,0,0.08);
+}
+
+.cuff {
+  position: absolute;
+  top: -8px;
+  left: 25%;
+  right: 25%;
+  height: 86px;
+  background: linear-gradient(180deg, #3a4a6b 0%, #2a3854 100%);
+  border-radius: 8px;
+  border: 2px solid #1a2540;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.cuff.inflated {
+  filter: brightness(1.05);
+  transform: scaleY(1.04);
+}
+
+.cuff-tube {
+  position: absolute;
+  bottom: -18px;
+  right: 12px;
+  width: 6px;
+  height: 22px;
+  background: #2a3854;
+  border-radius: 3px;
+}
+
+.stethoscope-status {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  background: #f7f8fb;
+  border-radius: 8px;
+}
+.stethoscope-status.active {
+  color: var(--good);
+  background: #e8f7ee;
+}
+.steth-icon { font-size: 1.1rem; }
+
+/* Controls */
+.controls-panel h2 {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+
+.control-group { margin-bottom: 1.5rem; }
+
+.pump-btn,
+.valve-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 1rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+  text-align: left;
+  transition: transform 0.05s ease, background 0.15s ease;
+}
+
+.pump-btn {
+  background: #1f2937;
+  color: white;
+}
+.pump-btn:hover { background: #2a3744; }
+.pump-btn:active { transform: scale(0.98); }
+
+.valve-btn {
+  background: #f0f2f7;
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+}
+.valve-btn[aria-pressed="true"] {
+  background: #fff3e1;
+  border-color: #ffb84d;
+  color: #8a4a00;
+}
+.valve-btn:hover { background: #e7eaf0; }
+
+.btn-title { font-size: 1.05rem; font-weight: 600; }
+.btn-sub { font-size: 0.78rem; opacity: 0.75; font-weight: 400; }
+
+.answer-group form .primary-btn { margin-top: 0.5rem; }
+
+.feedback {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.feedback.correct {
+  background: #e6f7ee;
+  border: 1px solid #b6e2c8;
+  color: #135a30;
+}
+.feedback.close {
+  background: #fff5e0;
+  border: 1px solid #f0d99a;
+  color: #6b4d00;
+}
+.feedback.wrong {
+  background: #fdebeb;
+  border: 1px solid #f3bdbd;
+  color: #842121;
+}

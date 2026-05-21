@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BP Training — Instructor</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="instructor-page">
+    <div class="card">
+      <h1>Blood Pressure Training</h1>
+      <p class="subtitle">Instructor Setup</p>
+      <p class="hint">
+        Enter the target blood pressure the student should auscultate.
+        The student will then practice measuring it with a virtual sphygmomanometer.
+      </p>
+
+      <form id="setup-form">
+        <div class="bp-inputs">
+          <label>
+            <span>Systolic (mmHg)</span>
+            <input
+              type="number"
+              id="systolic"
+              name="systolic"
+              min="60"
+              max="260"
+              value="120"
+              required
+            />
+          </label>
+          <span class="slash">/</span>
+          <label>
+            <span>Diastolic (mmHg)</span>
+            <input
+              type="number"
+              id="diastolic"
+              name="diastolic"
+              min="30"
+              max="160"
+              value="80"
+              required
+            />
+          </label>
+        </div>
+
+        <label class="full-row">
+          <span>Heart rate (bpm)</span>
+          <input
+            type="number"
+            id="heart-rate"
+            name="heart-rate"
+            min="40"
+            max="140"
+            value="72"
+            required
+          />
+        </label>
+
+        <p id="error" class="error-msg" role="alert"></p>
+
+        <button type="submit" class="primary-btn">Start Student Exercise &rarr;</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('setup-form');
+    const errorEl = document.getElementById('error');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const systolic = parseInt(document.getElementById('systolic').value, 10);
+      const diastolic = parseInt(document.getElementById('diastolic').value, 10);
+      const heartRate = parseInt(document.getElementById('heart-rate').value, 10);
+
+      errorEl.textContent = '';
+
+      if (Number.isNaN(systolic) || Number.isNaN(diastolic) || Number.isNaN(heartRate)) {
+        errorEl.textContent = 'Please enter valid numbers for all fields.';
+        return;
+      }
+      if (systolic <= diastolic) {
+        errorEl.textContent = 'Systolic pressure must be greater than diastolic pressure.';
+        return;
+      }
+      if (systolic - diastolic < 10) {
+        errorEl.textContent = 'Pulse pressure should be at least 10 mmHg.';
+        return;
+      }
+
+      sessionStorage.setItem('bp_systolic', String(systolic));
+      sessionStorage.setItem('bp_diastolic', String(diastolic));
+      sessionStorage.setItem('bp_hr', String(heartRate));
+
+      window.location.href = 'student.html';
+    });
+  </script>
+</body>
+</html>

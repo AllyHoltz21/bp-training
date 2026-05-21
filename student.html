@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BP Training — Student Exercise</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="student-page">
+    <header class="top-bar">
+      <h1>Take the Patient's Blood Pressure</h1>
+      <a href="index.html" class="back-link">&larr; Back to setup</a>
+    </header>
+
+    <div class="instructions">
+      <p>
+        <strong>Procedure:</strong>
+        Put on headphones. Press <em>Pump</em> repeatedly to inflate the cuff above
+        the suspected systolic pressure (typically 180&ndash;200 mmHg). Then press
+        <em>Open Valve</em> to release pressure slowly (~2&ndash;3 mmHg/sec) while
+        listening through the stethoscope. Note the pressure at the first audible
+        Korotkoff sound (systolic) and at which they disappear (diastolic).
+      </p>
+    </div>
+
+    <div class="exercise-grid">
+      <section class="gauge-panel">
+        <div class="gauge-wrapper">
+          <svg viewBox="0 0 300 300" class="gauge" id="gauge">
+            <circle cx="150" cy="150" r="140" class="gauge-bg" />
+            <circle cx="150" cy="150" r="140" class="gauge-ring" />
+            <g id="tick-marks"></g>
+            <g id="tick-labels"></g>
+            <text x="150" y="220" text-anchor="middle" class="gauge-label">mmHg</text>
+            <text x="150" y="245" text-anchor="middle" class="gauge-brand">SPHYG-100</text>
+            <g id="needle-group" transform="rotate(-135 150 150)">
+              <line
+                x1="150" y1="150"
+                x2="150" y2="50"
+                class="needle"
+              />
+            </g>
+            <circle cx="150" cy="150" r="10" class="needle-cap" />
+          </svg>
+          <div class="pressure-readout">
+            <span id="pressure-value">0</span>
+            <span class="readout-unit">mmHg</span>
+          </div>
+        </div>
+
+        <div class="cuff-area">
+          <div class="arm">
+            <div class="cuff" id="cuff">
+              <div class="cuff-tube"></div>
+            </div>
+          </div>
+          <div class="stethoscope-status" id="steth-status">
+            <span class="steth-icon">&#x1F3A7;</span>
+            <span id="steth-text">Stethoscope ready &mdash; listening</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls-panel">
+        <div class="control-group">
+          <h2>Controls</h2>
+          <button id="pump-btn" class="pump-btn" type="button">
+            <span class="btn-title">Pump</span>
+            <span class="btn-sub">+ ~15 mmHg per squeeze</span>
+          </button>
+
+          <button id="valve-btn" class="valve-btn" type="button" aria-pressed="false">
+            <span class="btn-title">Open Valve</span>
+            <span class="btn-sub">Click to deflate slowly</span>
+          </button>
+
+          <button id="reset-btn" class="ghost-btn" type="button">Reset cuff</button>
+        </div>
+
+        <div class="answer-group">
+          <h2>Your Reading</h2>
+          <form id="answer-form">
+            <div class="bp-inputs">
+              <label>
+                <span>Systolic</span>
+                <input type="number" id="ans-systolic" min="0" max="300" required />
+              </label>
+              <span class="slash">/</span>
+              <label>
+                <span>Diastolic</span>
+                <input type="number" id="ans-diastolic" min="0" max="300" required />
+              </label>
+            </div>
+            <button type="submit" class="primary-btn">Submit reading</button>
+          </form>
+
+          <div id="feedback" class="feedback" hidden></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="student.js"></script>
+</body>
+</html>
