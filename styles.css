@@ -50,6 +50,60 @@ p { line-height: 1.5; }
   font-size: 1.75rem;
 }
 
+/* Brand / logo */
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.brand-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0;
+}
+
+.brand-inline .brand-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.brand-inline .brand-text h1 {
+  margin: 0;
+}
+
+.org-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(20, 30, 60, 0.12);
+  background: white;
+}
+
+.brand-inline .org-logo {
+  width: 56px;
+  height: 56px;
+}
+
+.org-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.brand-inline .org-name {
+  font-size: 0.72rem;
+  color: var(--accent);
+}
+
 .subtitle {
   color: var(--accent);
   font-weight: 600;
@@ -169,10 +223,11 @@ p { line-height: 1.5; }
 
 .top-bar {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 .top-bar h1 {
   font-size: 1.5rem;
