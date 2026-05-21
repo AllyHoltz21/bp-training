@@ -50,58 +50,18 @@ p { line-height: 1.5; }
   font-size: 1.75rem;
 }
 
-/* Brand / logo */
-.brand {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
-}
-
-.brand-inline {
-  flex-direction: row;
-  align-items: center;
-  gap: 0.85rem;
-  margin-bottom: 0;
-}
-
-.brand-inline .brand-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.15rem;
-}
-
-.brand-inline .brand-text h1 {
-  margin: 0;
-}
-
-.org-logo {
-  width: 72px;
-  height: 72px;
+/* Corner logo */
+.corner-logo {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 2px 8px rgba(20, 30, 60, 0.12);
   background: white;
-}
-
-.brand-inline .org-logo {
-  width: 56px;
-  height: 56px;
-}
-
-.org-name {
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.brand-inline .org-name {
-  font-size: 0.72rem;
-  color: var(--accent);
+  box-shadow: 0 2px 6px rgba(20, 30, 60, 0.18);
+  z-index: 100;
 }
 
 .subtitle {
@@ -228,6 +188,7 @@ p { line-height: 1.5; }
   margin-bottom: 1rem;
   gap: 1rem;
   flex-wrap: wrap;
+  padding-left: 52px; /* leave room for the corner logo */
 }
 .top-bar h1 {
   font-size: 1.5rem;
