@@ -31,6 +31,18 @@
       position: relative;
       min-height: 100%;
     }
+    /* Force the font onto every element so the host page's own h1/p/button
+       rules can't override the widget's typography. */
+    #bp-app, #bp-app * {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
+    }
+    /* Re-assert monospace for the readout/gauge labels (higher specificity). */
+    #bp-app .pressure-readout,
+    #bp-app .pressure-readout *,
+    #bp-app .tick-label {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
 
     #bp-app h1, #bp-app h2, #bp-app h3 { margin: 0 0 0.5rem; font-weight: 600; }
     #bp-app p { line-height: 1.5; }
@@ -443,7 +455,16 @@
 
           <button type="submit" class="primary-btn">Start Student Exercise &rarr;</button>
           <button type="button" id="practice-btn" class="secondary-btn">
-            🎲 Student Practice (Randomize)
+            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"
+                 style="vertical-align:-3px;margin-right:6px">
+              <rect x="3.5" y="3.5" width="17" height="17" rx="3.5"
+                    fill="none" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="8" cy="8" r="1.6" fill="currentColor" />
+              <circle cx="16" cy="8" r="1.6" fill="currentColor" />
+              <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+              <circle cx="8" cy="16" r="1.6" fill="currentColor" />
+              <circle cx="16" cy="16" r="1.6" fill="currentColor" />
+            </svg>Student Practice (Randomize)
           </button>
         </form>
       </div>
