@@ -774,7 +774,7 @@
       return whiteBuffer;
     }
 
-    // Soft breath-like "phhh" of someone blowing air into the cuff — quiet.
+    // Short bulb-squeeze "whoosh" of air on each pump. (original)
     function playPumpSound() {
       if (!audioCtx) return;
       const t = audioCtx.currentTime;
@@ -783,18 +783,19 @@
       src.loop = true;
       const bp = audioCtx.createBiquadFilter();
       bp.type = 'bandpass';
-      bp.Q.value = 1.2; // narrower band → "breath through lips" tone
-      bp.frequency.setValueAtTime(650, t);
-      bp.frequency.linearRampToValueAtTime(430, t + 0.35); // breath tapering off
+      bp.Q.value = 0.8;
+      bp.frequency.setValueAtTime(500, t);
+      bp.frequency.linearRampToValueAtTime(1100, t + 0.10);
+      bp.frequency.linearRampToValueAtTime(650, t + 0.22);
       const g = audioCtx.createGain();
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(0.09, t + 0.08);   // soft breath in
-      g.gain.linearRampToValueAtTime(0.0001, t + 0.42); // breath out
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.55, t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0008, t + 0.26);
       src.connect(bp);
       bp.connect(g);
       g.connect(masterGain);
       src.start(t);
-      src.stop(t + 0.5);
+      src.stop(t + 0.3);
     }
 
     // Continuous low "whish" of escaping air while the valve is open.
@@ -803,14 +804,15 @@
       const src = audioCtx.createBufferSource();
       src.buffer = getWhiteBuffer();
       src.loop = true;
-      const lp = audioCtx.createBiquadFilter();
-      lp.type = 'lowpass';
-      lp.frequency.value = 850;
+      const bp = audioCtx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.Q.value = 0.8;
+      bp.frequency.value = 600; // mid band → soft "blowing air" / breath
       releaseGain = audioCtx.createGain();
       releaseGain.gain.value = 0;
-      releaseGain.gain.setTargetAtTime(0.10, audioCtx.currentTime, 0.06);
-      src.connect(lp);
-      lp.connect(releaseGain);
+      releaseGain.gain.setTargetAtTime(0.07, audioCtx.currentTime, 0.08);
+      src.connect(bp);
+      bp.connect(releaseGain);
       releaseGain.connect(masterGain);
       src.start();
       releaseNode = src;
