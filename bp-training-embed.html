@@ -815,7 +815,7 @@
       bp.frequency.value = 600; // mid band → soft "blowing air" / breath
       releaseGain = audioCtx.createGain();
       releaseGain.gain.value = 0;
-      releaseGain.gain.setTargetAtTime(0.07, audioCtx.currentTime, 0.08);
+      releaseGain.gain.setTargetAtTime(0.035, audioCtx.currentTime, 0.08);
       src.connect(bp);
       bp.connect(releaseGain);
       releaseGain.connect(masterGain);
