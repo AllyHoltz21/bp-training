@@ -27,6 +27,7 @@
   let lastFrameTime = performance.now();
   let lastBeatTime = 0;        // ms timestamp of last heartbeat
   let displayedAngle = -135;   // current needle angle (lerps toward target)
+  let needleBounce = 0;        // transient flick added on each Korotkoff tap
   const beatInterval = () => 60000 / heartRate;
 
   // -------- Elements --------
@@ -101,6 +102,8 @@
   // -------- Audio: Web Audio API for Korotkoff sounds --------
   let audioCtx = null;
   let masterGain = null;
+  let releaseNode = null;      // looping "air escaping" sound while deflating
+  let releaseGain = null;
 
   function ensureAudio() {
     if (audioCtx) return;
@@ -224,6 +227,68 @@
     bgNoiseNode = src;
   }
 
+  // Broadband noise buffer for the mechanical air sounds (pump + release).
+  let whiteBuffer = null;
+  function getWhiteBuffer() {
+    if (whiteBuffer) return whiteBuffer;
+    const len = audioCtx.sampleRate * 1.0;
+    whiteBuffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+    const d = whiteBuffer.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    return whiteBuffer;
+  }
+
+  // Short bulb-squeeze "whoosh" of air on each pump.
+  function playPumpSound() {
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime;
+    const src = audioCtx.createBufferSource();
+    src.buffer = getWhiteBuffer();
+    src.loop = true;
+    const bp = audioCtx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.Q.value = 0.8;
+    bp.frequency.setValueAtTime(500, t);
+    bp.frequency.linearRampToValueAtTime(1100, t + 0.10);
+    bp.frequency.linearRampToValueAtTime(650, t + 0.22);
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.55, t + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0008, t + 0.26);
+    src.connect(bp);
+    bp.connect(g);
+    g.connect(masterGain);
+    src.start(t);
+    src.stop(t + 0.3);
+  }
+
+  // Continuous low "whish" of escaping air while the valve is open.
+  function startReleaseHiss() {
+    if (!audioCtx || releaseNode) return;
+    const src = audioCtx.createBufferSource();
+    src.buffer = getWhiteBuffer();
+    src.loop = true;
+    const lp = audioCtx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 850;
+    releaseGain = audioCtx.createGain();
+    releaseGain.gain.value = 0;
+    releaseGain.gain.setTargetAtTime(0.16, audioCtx.currentTime, 0.06);
+    src.connect(lp);
+    lp.connect(releaseGain);
+    releaseGain.connect(masterGain);
+    src.start();
+    releaseNode = src;
+  }
+  function stopReleaseHiss() {
+    if (!releaseNode) return;
+    const now = audioCtx.currentTime;
+    if (releaseGain) releaseGain.gain.setTargetAtTime(0.0001, now, 0.05);
+    try { releaseNode.stop(now + 0.3); } catch (e) {}
+    releaseNode = null;
+    releaseGain = null;
+  }
+
   // -------- Korotkoff phase logic --------
   // Given current pressure relative to systolic/diastolic, decide:
   //   - whether a sound plays at all
@@ -282,19 +347,27 @@
       setPressure(pressure - drop);
     }
 
-    // Smooth needle: lerp displayed angle toward the target each frame.
+    // Air finished escaping — cut the release whish.
+    if (releaseNode && pressure <= 0.5) stopReleaseHiss();
+
+    // Smooth needle: lerp displayed angle toward the target each frame,
+    // plus a quickly-decaying bounce on each Korotkoff beat.
     const targetAngle = pressureToAngle(pressure);
     displayedAngle += (targetAngle - displayedAngle) * Math.min(1, dt * 8);
+    needleBounce *= Math.exp(-dt * 18);
     needleGroup.setAttribute(
       'transform',
-      `rotate(${displayedAngle.toFixed(3)} 150 150)`
+      `rotate(${(displayedAngle + needleBounce).toFixed(3)} 150 150)`
     );
 
     // Heartbeat → trigger Korotkoff if in range
     if (audioCtx && now - lastBeatTime >= beatInterval()) {
       lastBeatTime = now;
       const k = korotkoffFor(pressure);
-      if (k) playKorotkoff(k.intensity, k.phase);
+      if (k) {
+        playKorotkoff(k.intensity, k.phase);
+        needleBounce += 2.6 * k.intensity; // slight needle flick per tap
+      }
     }
 
     requestAnimationFrame(tick);
@@ -313,12 +386,15 @@
     // Small random variation per pump so it feels real
     const delta = PUMP_PER_CLICK + (Math.random() * 6 - 3);
     setPressure(pressure + delta);
+    playPumpSound();
   });
 
   valveBtn.addEventListener('click', () => {
     ensureAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
     valveOpen = !valveOpen;
+    if (valveOpen && pressure > 0.5) startReleaseHiss();
+    else stopReleaseHiss();
     valveBtn.setAttribute('aria-pressed', String(valveOpen));
     valveBtn.querySelector('.btn-title').textContent = valveOpen
       ? 'Close Valve'
@@ -331,6 +407,7 @@
   resetBtn.addEventListener('click', () => {
     setPressure(0);
     valveOpen = false;
+    stopReleaseHiss();
     valveBtn.setAttribute('aria-pressed', 'false');
     valveBtn.querySelector('.btn-title').textContent = 'Open Valve';
     valveBtn.querySelector('.btn-sub').textContent = 'Click to deflate slowly';
