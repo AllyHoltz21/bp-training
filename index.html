@@ -66,6 +66,9 @@
         <p id="error" class="error-msg" role="alert"></p>
 
         <button type="submit" class="primary-btn">Start Student Exercise &rarr;</button>
+        <button type="button" id="practice-btn" class="secondary-btn">
+          🎲 Student Practice (Randomize)
+        </button>
       </form>
     </div>
   </main>
@@ -73,6 +76,27 @@
   <script>
     const form = document.getElementById('setup-form');
     const errorEl = document.getElementById('error');
+
+    // Student practice: generate a clinically plausible random BP + HR,
+    // then launch straight into the exercise.
+    const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    // Sphygmomanometers resolve to even numbers (2 mmHg marks), so round to even.
+    const randEven = (min, max) => randInt(min / 2, max / 2) * 2;
+
+    document.getElementById('practice-btn').addEventListener('click', () => {
+      const systolic = randEven(90, 180);
+      // Keep a realistic pulse pressure (30–60) without exceeding the diastolic floor.
+      const pulsePressure = randEven(30, 60);
+      const diastolic = Math.max(50, systolic - pulsePressure);
+      const heartRate = randInt(55, 95);
+
+      document.getElementById('systolic').value = String(systolic);
+      document.getElementById('diastolic').value = String(diastolic);
+      document.getElementById('heart-rate').value = String(heartRate);
+
+      // Reuse the form's validation + navigation path.
+      form.requestSubmit();
+    });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();

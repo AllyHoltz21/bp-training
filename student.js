@@ -29,8 +29,6 @@
   const needleGroup = document.getElementById('needle-group');
   const pressureValue = document.getElementById('pressure-value');
   const cuff = document.getElementById('cuff');
-  const stethStatus = document.getElementById('steth-status');
-  const stethText = document.getElementById('steth-text');
   const pumpBtn = document.getElementById('pump-btn');
   const valveBtn = document.getElementById('valve-btn');
   const resetBtn = document.getElementById('reset-btn');
@@ -58,8 +56,8 @@
     return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
   }
 
-  for (let p = 0; p <= MAX_PRESSURE; p += 10) {
-    const isMajor = p % 20 === 0;
+  for (let p = 0; p <= MAX_PRESSURE; p += 2) {
+    const isMajor = p % 10 === 0;
     const angle = pressureToAngle(p);
     const outer = polar(CENTER, CENTER, OUTER_R, angle);
     const inner = polar(
@@ -77,7 +75,7 @@
     line.setAttribute('class', 'tick' + (isMajor ? ' major' : ''));
     tickG.appendChild(line);
 
-    if (isMajor && p % 40 === 0) {
+    if (p % 20 === 0) {
       const lp = polar(CENTER, CENTER, LABEL_R, angle);
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', lp.x);
@@ -97,8 +95,16 @@
     const Ctx = window.AudioContext || window.webkitAudioContext;
     audioCtx = new Ctx();
     masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0.9;
-    masterGain.connect(audioCtx.destination);
+    masterGain.gain.value = 1.0;
+    // Limiter so the louder taps stay punchy without harsh digital clipping.
+    const limiter = audioCtx.createDynamicsCompressor();
+    limiter.threshold.value = -3;
+    limiter.knee.value = 6;
+    limiter.ratio.value = 12;
+    limiter.attack.value = 0.002;
+    limiter.release.value = 0.12;
+    masterGain.connect(limiter);
+    limiter.connect(audioCtx.destination);
   }
 
   // Build a buffer of low-frequency noise to use for "thump" texture.
@@ -140,7 +146,7 @@
     }
 
     const noiseGain = audioCtx.createGain();
-    const peak = 0.55 * intensity;
+    const peak = 0.95 * intensity;
     noiseGain.gain.setValueAtTime(0, t);
     noiseGain.gain.linearRampToValueAtTime(peak, t + 0.005);
     noiseGain.gain.exponentialRampToValueAtTime(
@@ -162,7 +168,7 @@
     osc.frequency.exponentialRampToValueAtTime(35, t + 0.12);
 
     const oscGain = audioCtx.createGain();
-    const oscPeak = 0.35 * intensity;
+    const oscPeak = 0.6 * intensity;
     oscGain.gain.setValueAtTime(0, t);
     oscGain.gain.linearRampToValueAtTime(oscPeak, t + 0.008);
     oscGain.gain.exponentialRampToValueAtTime(0.0005, t + 0.14);
@@ -238,17 +244,6 @@
     pressure = Math.max(0, Math.min(MAX_PRESSURE, p));
     pressureValue.textContent = Math.round(pressure);
     cuff.classList.toggle('inflated', pressure > 20);
-
-    // Stethoscope status indicator
-    const k = korotkoffFor(pressure);
-    if (k && pressure > 20) {
-      stethStatus.classList.add('active');
-      stethText.textContent = 'Korotkoff sounds audible';
-    } else {
-      stethStatus.classList.remove('active');
-      stethText.textContent =
-        pressure > 20 ? 'Listening… (silent)' : 'Stethoscope ready — listening';
-    }
   }
 
   function tick(now) {

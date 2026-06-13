@@ -161,6 +161,22 @@ p { line-height: 1.5; }
 .primary-btn:hover { background: var(--accent-deep); }
 .primary-btn:active { transform: translateY(1px); }
 
+.secondary-btn {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 0.6rem;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.05s ease;
+}
+.secondary-btn:hover { background: var(--accent); color: white; }
+.secondary-btn:active { transform: translateY(1px); }
+
 .ghost-btn {
   background: transparent;
   color: var(--muted);
@@ -341,23 +357,6 @@ p { line-height: 1.5; }
   background: #2a3854;
   border-radius: 3px;
 }
-
-.stethoscope-status {
-  margin-top: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--muted);
-  font-size: 0.9rem;
-  padding: 0.5rem 0.75rem;
-  background: #f7f8fb;
-  border-radius: 8px;
-}
-.stethoscope-status.active {
-  color: var(--good);
-  background: #e8f7ee;
-}
-.steth-icon { font-size: 1.1rem; }
 
 /* Controls */
 .controls-panel h2 {
