@@ -41,6 +41,11 @@ to a server.
   taps **fade in** just below systolic and **fade out** approaching diastolic,
   so the student has to genuinely listen rather than read a cue. Volume is fixed
   loud for laptop speakers.
+- **Mechanical air sounds** — a short air "whoosh" plays on each pump, and a
+  soft continuous hiss of escaping air plays the whole time the valve is open
+  (it stops when the valve closes or the cuff empties).
+- **Live needle bounce** — the gauge needle gives a slight flick on every
+  Korotkoff beat, like a real aneroid gauge pulsing with the heartbeat.
 - **Randomized practice** — the **Student Practice** button generates a
   clinically plausible, even-numbered blood pressure for unsupervised drilling.
   Values are written straight to `sessionStorage`, so the student never glimpses
@@ -69,14 +74,41 @@ python3 -m http.server 8000
 Korotkoff sounds are low-frequency thumps. They're hard to hear on laptop
 speakers — use headphones for an accurate exercise.
 
+## Embedding in another site
+
+Two prebuilt, fully self-contained single-file versions are included (CSS, JS,
+and the logo all inlined; both screens combined into one document):
+
+- **`bp-training-embed.html`** — a standalone page. Host it and drop it in an
+  `<iframe>`. This repo is published via **GitHub Pages**, so the hosted copy is
+  already live at:
+  `https://allyholtz21.github.io/bp-training/bp-training-embed.html`
+
+  ```html
+  <iframe src="https://allyholtz21.github.io/bp-training/bp-training-embed.html"
+          width="100%" height="850" style="border:0;" title="BP Training"
+          allow="autoplay"></iframe>
+  ```
+
+- **`bp-training-fragment.html`** — the same widget with no document wrapper, for
+  pasting directly into a CMS "Custom HTML / Embed" block (e.g. Weebly). All
+  styles are scoped to `#bp-app` so they won't clash with the host page.
+
+> Both embed files are **generated** from `bp-training-embed.html`; if you edit
+> the main app files, regenerate them. The hosted iframe updates automatically a
+> minute or two after pushing to `main` (GitHub caches files ~10 min, so use a
+> `?v=` query string to force a fresh copy when testing).
+
 ## Project structure
 
 ```
-index.html     Instructor setup page + randomizer
-student.html   Student exercise page (gauge + controls)
-student.js     Gauge rendering, audio synthesis, deflation physics, scoring
-styles.css     All styling
-emtref-01-1.jpg  NJ Association of EMS Educators logo
+index.html                Instructor setup page + randomizer
+student.html              Student exercise page (gauge + controls)
+student.js                Gauge rendering, audio synthesis, deflation physics, scoring
+styles.css                All styling
+emtref-01-1.jpg           NJ Association of EMS Educators logo
+bp-training-embed.html    Self-contained single-file build (for hosting / iframe)
+bp-training-fragment.html Inline fragment build (for CMS embed blocks)
 ```
 
 ## License
