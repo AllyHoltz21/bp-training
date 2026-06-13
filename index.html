@@ -90,12 +90,13 @@
       const diastolic = Math.max(50, systolic - pulsePressure);
       const heartRate = randInt(55, 95);
 
-      document.getElementById('systolic').value = String(systolic);
-      document.getElementById('diastolic').value = String(diastolic);
-      document.getElementById('heart-rate').value = String(heartRate);
+      // Write straight to sessionStorage and navigate — never populate the
+      // visible inputs, so the student never glimpses the randomized values.
+      sessionStorage.setItem('bp_systolic', String(systolic));
+      sessionStorage.setItem('bp_diastolic', String(diastolic));
+      sessionStorage.setItem('bp_hr', String(heartRate));
 
-      // Reuse the form's validation + navigation path.
-      form.requestSubmit();
+      window.location.href = 'student.html';
     });
 
     form.addEventListener('submit', (e) => {

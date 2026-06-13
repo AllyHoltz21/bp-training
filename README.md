@@ -37,12 +37,17 @@ to a server.
 - **Realistic aneroid gauge** — dial graduated every 2 mmHg, with major marks
   every 10 and numeric labels every 20, just like a real cuff.
 - **Korotkoff sound synthesis** — taps are generated with the Web Audio API and
-  change character across the auscultatory phases (sharp taps → muffling), so the
-  student has to genuinely listen rather than read a cue.
-- **Randomized practice** — the setup page can generate a clinically plausible
-  (and even-numbered) blood pressure for unsupervised drilling.
-- **No spoilers** — the simulator gives no visual indication of when sounds are
-  audible; the student relies on the stethoscope alone.
+  change character across the auscultatory phases (sharp taps → muffling). The
+  taps **fade in** just below systolic and **fade out** approaching diastolic,
+  so the student has to genuinely listen rather than read a cue. Volume is fixed
+  loud for laptop speakers.
+- **Randomized practice** — the **Student Practice** button generates a
+  clinically plausible, even-numbered blood pressure for unsupervised drilling.
+  Values are written straight to `sessionStorage`, so the student never glimpses
+  the answer.
+- **No spoilers by default** — the digital pressure readout is **hidden by
+  default** (a checkbox can reveal it), forcing the student to read the analog
+  gauge. The simulator also gives no visual cue for when sounds are audible.
 
 ## Running it
 
@@ -68,7 +73,7 @@ speakers — use headphones for an accurate exercise.
 
 ```
 index.html     Instructor setup page + randomizer
-student.html   Student exercise page (gauge, cuff, controls)
+student.html   Student exercise page (gauge + controls)
 student.js     Gauge rendering, audio synthesis, deflation physics, scoring
 styles.css     All styling
 emtref-01-1.jpg  NJ Association of EMS Educators logo

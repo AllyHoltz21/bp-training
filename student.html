@@ -48,19 +48,16 @@
             </g>
             <circle cx="150" cy="150" r="10" class="needle-cap" />
           </svg>
-          <div class="pressure-readout">
+          <div class="pressure-readout" id="pressure-readout">
             <span id="pressure-value">0</span>
             <span class="readout-unit">mmHg</span>
           </div>
+          <label class="readout-toggle">
+            <input type="checkbox" id="readout-toggle" />
+            <span>Show digital readout</span>
+          </label>
         </div>
 
-        <div class="cuff-area">
-          <div class="arm">
-            <div class="cuff" id="cuff">
-              <div class="cuff-tube"></div>
-            </div>
-          </div>
-        </div>
       </section>
 
       <section class="controls-panel">
@@ -77,6 +74,7 @@
           </button>
 
           <button id="reset-btn" class="ghost-btn" type="button">Reset cuff</button>
+
         </div>
 
         <div class="answer-group">

@@ -20,6 +20,10 @@
   const LEAK_RATE = 0.05;      // mmHg per second baseline leak
 
   let valveOpen = false;
+  let korotkoffGain = null;     // user-controllable volume for the taps only
+  const MAX_KOROTKOFF_GAIN = 6; // slider at 100% → very loud for laptop speakers
+  // Slider value 0..1 → tap gain. Default maxed so it's loud on laptop speakers.
+  let korotkoffLevel = 1.0;
   let lastFrameTime = performance.now();
   let lastBeatTime = 0;        // ms timestamp of last heartbeat
   let displayedAngle = -135;   // current needle angle (lerps toward target)
@@ -28,12 +32,20 @@
   // -------- Elements --------
   const needleGroup = document.getElementById('needle-group');
   const pressureValue = document.getElementById('pressure-value');
-  const cuff = document.getElementById('cuff');
   const pumpBtn = document.getElementById('pump-btn');
   const valveBtn = document.getElementById('valve-btn');
   const resetBtn = document.getElementById('reset-btn');
   const answerForm = document.getElementById('answer-form');
   const feedbackEl = document.getElementById('feedback');
+  const readout = document.getElementById('pressure-readout');
+  const readoutToggle = document.getElementById('readout-toggle');
+
+  // Toggle the digital readout — hidden forces reading the analog gauge.
+  // Default is OFF (hidden); apply that initial state on load.
+  readout.classList.toggle('hidden', !readoutToggle.checked);
+  readoutToggle.addEventListener('change', () => {
+    readout.classList.toggle('hidden', !readoutToggle.checked);
+  });
 
   // -------- Draw gauge ticks --------
   const tickG = document.getElementById('tick-marks');
@@ -105,6 +117,12 @@
     limiter.release.value = 0.12;
     masterGain.connect(limiter);
     limiter.connect(audioCtx.destination);
+
+    // Korotkoff taps run through their own gain (the slider), so turning them
+    // up does NOT also amplify the background stethoscope hiss.
+    korotkoffGain = audioCtx.createGain();
+    korotkoffGain.gain.value = korotkoffLevel * MAX_KOROTKOFF_GAIN;
+    korotkoffGain.connect(masterGain);
   }
 
   // Build a buffer of low-frequency noise to use for "thump" texture.
@@ -156,7 +174,7 @@
 
     noise.connect(noiseFilter);
     noiseFilter.connect(noiseGain);
-    noiseGain.connect(masterGain);
+    noiseGain.connect(korotkoffGain);
     noise.start(t);
     noise.stop(t + 0.3);
 
@@ -174,7 +192,7 @@
     oscGain.gain.exponentialRampToValueAtTime(0.0005, t + 0.14);
 
     osc.connect(oscGain);
-    oscGain.connect(masterGain);
+    oscGain.connect(korotkoffGain);
     osc.start(t);
     osc.stop(t + 0.2);
   }
@@ -211,9 +229,10 @@
   //   - whether a sound plays at all
   //   - its loudness (intensity)
   //   - its character ('tap' vs 'muffled')
+  const FADE_MMHG = 7; // width of the fade-in/out zones at each end
   function korotkoffFor(p) {
-    if (p >= systolic + 1 || p <= diastolic - 1) {
-      return null; // silent
+    if (p >= systolic || p <= diastolic) {
+      return null; // silent outside the auscultatory window
     }
     const range = systolic - diastolic;
     // pos = 1 at systolic, 0 at diastolic
@@ -236,6 +255,13 @@
       intensity = 0.35;
       phase = 'muffled';
     }
+    // Smooth envelope: taps grow in just below systolic and die out
+    // approaching diastolic, instead of switching on/off abruptly.
+    const fadeIn = Math.min(1, (systolic - p) / FADE_MMHG);
+    const fadeOut = Math.min(1, (p - diastolic) / FADE_MMHG);
+    intensity *= fadeIn * fadeOut;
+    if (intensity < 0.02) return null; // effectively silent at the very edges
+
     return { intensity: Math.min(1, intensity), phase };
   }
 
@@ -243,7 +269,6 @@
   function setPressure(p) {
     pressure = Math.max(0, Math.min(MAX_PRESSURE, p));
     pressureValue.textContent = Math.round(pressure);
-    cuff.classList.toggle('inflated', pressure > 20);
   }
 
   function tick(now) {
