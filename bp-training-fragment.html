@@ -789,7 +789,7 @@
       bp.frequency.linearRampToValueAtTime(650, t + 0.22);
       const g = audioCtx.createGain();
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.55, t + 0.03);
+      g.gain.linearRampToValueAtTime(0.35, t + 0.03);
       g.gain.exponentialRampToValueAtTime(0.0008, t + 0.26);
       src.connect(bp);
       bp.connect(g);
